@@ -5,3 +5,15 @@ Historique des messages -> stockés dans la database
 Limite de taille des messages?
 Pieces jointes? 
 Affichage des messages : ?
+
+Initialiser le projet React + TypeScript (setup local).
+
+Créer une interface simple de chat (frontend) en React.
+
+Ajouter le typage TypeScript (types pour messages).
+
+Simuler des échanges locaux (mock) pour comprendre le flux.
+
+Ajouter un backend WebSocket simple (Node.js + ws) pour un vrai chat en temps réel.
+
+Connecter le frontend au backend, améliorer UI et gérer cas d’erreur.
