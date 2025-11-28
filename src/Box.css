@@ -1,4 +1,21 @@
 div.box {
 	color: black;
 	background-color: red;
+	width: 10%;
+	border: 3px solid rgb(255, 155, 230);
+	background-color: #ec00ec;
+	display: 'flex';
+	padding-bottom: 100px;
+	margin: 1px;
+	border-radius: 5px;
 }
+
+/* div.textBox
+{
+	width: 10%;
+	border: 3px solid rgb(255, 155, 230);
+	background-color: #ec00ec;
+	padding: 20px;
+	margin: 5px;
+	border-radius: 5px;
+} */
