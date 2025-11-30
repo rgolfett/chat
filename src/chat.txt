@@ -7,25 +7,29 @@ Pieces jointes?
 Affichage des messages : ?
 
 Initialiser le projet React + TypeScript (setup local).
-
 Créer une interface simple de chat (frontend) en React.
-
 Ajouter le typage TypeScript (types pour messages).
-
-Simuler des échanges locaux (mock) pour comprendre le flux.
-
-Ajouter un backend WebSocket simple (Node.js + ws) pour un vrai chat en temps réel.
-
+Ajouter un backend WebSocket simple (Node.js + ws).
 Connecter le frontend au backend, améliorer UI et gérer cas d’erreur.
-
 Backend : framework perso style NestJS-like sur Fastify, avec decorators @WebSocketGateway(), @SubscribeMessage() etc.
-
 Socket layer : socket.io via plugin.
-
 DB : SQLite (better-sqlite3) via plugin sqlite-plugin.ts (tu fournis fastify.db).
-
 Object validation via my-class-validator + DTOs / SocketSchema.
-
 Frontend : React + TypeScript (client socket.io).
 
-But tu ne connais pas encore tout ça → on y va progressivement.
+
+- @WebSocketGateway(port, (option)) :
+	le port : le meme que le serveur https
+	option : ici namespace: 'events', pour separer les differents types de message :
+		ws://serveur/events -> separer les flux
+
+- le 2eme WebSocketGateway(port different !, {transports: ['websocket']} ) 
+	-> garantir que seules les connexions websocket soient acceptees 
+1 : accepter les connexions des clients/messages?
+2 : mise a jour rapide de l'etat
+
+
+- @SubscribeMessage('events')
+handleEvent(@MessageBody() data: string): string {
+  return data;
+}

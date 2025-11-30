@@ -22,7 +22,9 @@ import { Message } from "./types";
 interface ChatProps {
   username: string;
 }
-function Chat({ username }: ChatProps) { ... }
+function Chat({ username }: ChatProps) {}
+
+
 // export default function Chat({ username }: ChatProps) {
 //   const [messages, setMessages] = useState<Message[]>([]);
 //   const [input, setInput] = useState("");
