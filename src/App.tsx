@@ -1,7 +1,7 @@
 // src/components/Chat.tsx
 
 import { useEffect, useState, useRef } from "react";
-import { socket } from "./sockets";
+import { socket } from "./sockets"; 
 import { Message, createMessage } from "./types";
 
 interface ChatProps {
@@ -13,34 +13,35 @@ export default function Chat({ username }: ChatProps) {
   const [input, setInput] = useState("");
   const boxRef = useRef<HTMLDivElement | null>(null);
 
-  // Autoscroll quand un nouveau message arrive
+  // Auto-scroll quand un nouveau message arrive
   useEffect(() => {
     if (boxRef.current) {
       boxRef.current.scrollTop = boxRef.current.scrollHeight;
     }
   }, [messages]);
 
-  // Écouter les messages du serveur
+  // Réception des messages depuis le serveur
   useEffect(() => {
-    function handleMessage(msg: Message) {
+    const handleMessage = (msg: Message) => {
       setMessages((prev) => [...prev, msg]);
-    }
+    };
 
     socket.on("global-message", handleMessage);
 
-    // Nettoyage pour éviter les doublons
     return () => {
       socket.off("global-message", handleMessage);
     };
   }, []);
 
-  // Envoyer un message
+  // Envoi d’un message
   const sendMessage = () => {
     if (!input.trim()) return;
 
     const msg = createMessage(username, input.trim());
+
     socket.emit("global-message", msg);
-    setInput(""); // vider le champ
+
+    setInput(""); // on nettoie le champ
   };
 
   return (
