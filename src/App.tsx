@@ -1,76 +1,104 @@
-import './App.css'
-import './Chat'
-import { Box } from './Box'
-import { ChangeEvent, useEffect, useState } from 'react';
-import { socket } from './sockets';
+// src/components/Chat.tsx
 
-// const [username, setUsername] = useState(""); 
-// function App() {
+import { useEffect, useState, useRef } from "react";
+import { socket } from "./sockets";
+import { Message, createMessage } from "./types";
 
-//   return (
-//     <div> 
-//     	<Box name="Message :" message="get the msg" />
-
-// 	</div>
-//   )
-// }
-// const messages = ["Bonjour", "Ça va ?", "Très bien !"];
-
-// function App() {
-//   return (
-//     <>
-//       <h1>Mon chat</h1>
-//       {messages.map(m => (
-//         <p>{m}</p>
-//       ))}
-//     </>
-//   );
-// }
-
-// export default App;
-
-interface Message {
-  message : string
+interface ChatProps {
+  username: string;
 }
 
-function App() {
-  const [message, setMessage] = useState<string>("");
+export default function Chat({ username }: ChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState("");
+  const boxRef = useRef<HTMLDivElement | null>(null);
 
+  // Autoscroll quand un nouveau message arrive
   useEffect(() => {
-    socket.on("test", (data)=> {
-      console.log(data);
-    })
-  })
+    if (boxRef.current) {
+      boxRef.current.scrollTop = boxRef.current.scrollHeight;
+    }
+  }, [messages]);
 
-  const handleSubmit = (event : ChangeEvent<HTMLFormElement>) => {
-		event.preventDefault();
+  // Écouter les messages du serveur
+  useEffect(() => {
+    function handleMessage(msg: Message) {
+      setMessages((prev) => [...prev, msg]);
+    }
 
-    console.log(message);
+    socket.on("global-message", handleMessage);
 
-    socket.emit("test", message)
-	}
+    // Nettoyage pour éviter les doublons
+    return () => {
+      socket.off("global-message", handleMessage);
+    };
+  }, []);
+
+  // Envoyer un message
+  const sendMessage = () => {
+    if (!input.trim()) return;
+
+    const msg = createMessage(username, input.trim());
+    socket.emit("global-message", msg);
+    setInput(""); // vider le champ
+  };
 
   return (
-    <>
-      <h1>Mon chat</h1>
-      <form onSubmit={handleSubmit}>
-        <input type="text" placeholder='Ton message' onChange={( event : ChangeEvent<HTMLInputElement>) => setMessage(event.target.value)}/>
-      </form>
-      {messages.map(m => (
-        <p>{m.message}</p>
-      ))}
-    </>
+    <div style={{ padding: 16, fontFamily: "sans-serif" }}>
+      <h2>Chat global</h2>
+
+      <div
+        ref={boxRef}
+        style={{
+          border: "1px solid #ddd",
+          height: 300,
+          overflowY: "auto",
+          padding: 8,
+          marginBottom: 8,
+          backgroundColor: "#f9f9f9",
+          borderRadius: 4,
+        }}
+      >
+        {messages.map((m) => (
+          <div key={m.timestamp} style={{ marginBottom: 6 }}>
+            <strong>{m.username}</strong>: {m.content}
+            <div style={{ fontSize: 11, color: "#666" }}>
+              {new Date(m.timestamp).toLocaleTimeString()}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Ton message"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") sendMessage();
+          }}
+          style={{
+            flex: 1,
+            padding: 8,
+            marginRight: 8,
+            borderRadius: 4,
+            border: "1px solid #c7189bff",
+          }}
+        />
+        <button
+          onClick={sendMessage}
+          style={{
+            padding: "8px 16px",
+            borderRadius: 4,
+            border: "none",
+            backgroundColor: "#ff0000ff",
+            color: "#fff",
+            cursor: "pointer",
+          }}
+        >
+          Envoyer
+        </button>
+      </div>
+    </div>
   );
 }
-
-export default App;
-
- // 1. username stocké en state
-  // 2. si pas de username → afficher un input
-  // 3. si username → envoyer "identify" au serveur
-  // 4. puis afficher <Chat username={username} />
-
-//user CreateChatClient
-
-
